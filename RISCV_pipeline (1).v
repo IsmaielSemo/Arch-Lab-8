@@ -75,19 +75,19 @@ module RISCV_pipeline (
         .offset(PC_out[7:2]), 
         .data_out(instruction)
     );
+    Nbit_2x1mux #(32) m2(add4, EX_MEM_BranchAddOut,PCSrc, PC_in);
+    assign flush = stall | PCSrc;
+       
+    Nbit_2x1mux #(8) ( {RegWrite, MemtoReg, Branch, MemRead, MemWrite, ALUSrc, ALUOp}, 0,flush, control_out); //if flush all control signals to 0
+       
+    Nbit_2x1mux #(32) flush1 ( instruction, 32'b0000000_00000_00000_000_00000_0110011,PCSrc, PC_mux_out); //if PCSrc data-out to nop
+       
+    Nbit_2x1mux #(32) m20 (PCSrc, ID_EX_Ctrl[7:3], 0, Ctrl_out);
+    
+    assign PCSrc= EX_MEM_Zero & EX_MEM_Ctrl[2];
+       
 
     wire [31:0] nop = 32'b0000000_00000_00000_000_00000_0110011; //nop instruction  
-     always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            IF_ID_out <= 32'b0;  
-        end else begin
-            if (PCSrc == 1) begin
-                IF_ID_Inst <= nop;
-            end else begin
-                IF_ID_Inst <= instruction;  
-            end
-        end
-    end
 
     wire [31:0] ID_EX_out;
     // ID/EX register logic (instruction decode stage)
@@ -225,7 +225,7 @@ ALUControlUnit ALUcontrol (
 //    );
 
 NbitRegister #(107) EX_MEM (
-        .D({Sum, ALU_Result, zero_flag, ALU_in2, ID_EX_Rd, ID_EX_Ctrl[5]/*Memtoreg*/, ID_EX_Ctrl[0]/*Regwrite*/, ID_EX_Ctrl[7]/*Branch*/, ID_EX_Ctrl[6]/*MemRead*/, ID_EX_Ctrl[2]/*Memwrite*/}),
+    .D({Sum, ALU_Result, zero_flag, ALU_in2, ID_EX_Rd, {ID_EX_Ctrl[5]/*Memtoreg*/, ID_EX_Ctrl[0]/*Regwrite*/, ID_EX_Ctrl[7]/*Branch*/, ID_EX_Ctrl[6]/*MemRead*/, ID_EX_Ctrl[2]/*Memwrite*/}),
         .rst(reset),
         .load(1'b1),
         .clk(clk),
