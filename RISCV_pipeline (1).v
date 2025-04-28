@@ -82,13 +82,14 @@ module RISCV_pipeline (
             IF_ID_out <= 32'b0;  
         end else begin
             if (PCSrc == 1) begin
-                IF_ID_out <= nop;
+                IF_ID_Inst <= nop;
             end else begin
-                IF_ID_out <= instruction;  
+                IF_ID_Inst <= instruction;  
             end
         end
     end
 
+    wire [31:0] ID_EX_out;
     // ID/EX register logic (instruction decode stage)
     always @(posedge clk or posedge reset) begin
         if (reset) begin
@@ -97,23 +98,23 @@ module RISCV_pipeline (
             if (PCSrc == 1 || stall == 1) begin
                 ID_EX_out <= 32'b0;  
             end else begin
-                ID_EX_out <= IF_ID_out;
+                ID_EX_out <= IF_ID_Inst;
             end
         end
     end
 
    
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            EX_MEM_out <= 32'b0;  
-        end else begin
-            if (PCSrc == 1) begin
-                EX_MEM_out <= 32'b0; 
-            end else begin
-                EX_MEM_out <= ID_EX_out;  
-            end
-        end
-    end
+ //   always @(posedge clk or posedge reset) begin
+  //      if (reset) begin
+    //        EX_MEM_out <= 32'b0;  
+   //     end else begin
+    //        if (PCSrc == 1) begin
+     //           EX_MEM_out <= 32'b0; 
+     //       end else begin
+     //           EX_MEM_out <= ID_EX_out;  
+      //      end
+    //    end
+   // end
    
     NbitRegister #(64) IF_ID (
         .D({PC_out, instruction}),
@@ -162,7 +163,7 @@ module RISCV_pipeline (
 
     // Pipeline Register ID/EX
     NbitRegister #(200) ID_EX (
-        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch && !MuxControl, MemRead && !MuxControl, MemtoReg&& !MuxControl, ALUOp&& !MuxControl, MemWrite&& !MuxControl, ALUSrc&& !MuxControl, RegWrite&& !MuxControl}),
+        .D({IF_ID_PC, data_in1, data_in2, imm_out, ID_EX_out[30], ID_EX_out[14:12], ID_EX_out[19:15], ID_EX_out[24:20], ID_EX_out[11:7], Branch && !MuxControl, MemRead && !MuxControl, MemtoReg&& !MuxControl, ALUOp&& !MuxControl, MemWrite&& !MuxControl, ALUSrc&& !MuxControl, RegWrite&& !MuxControl}),
         .rst(reset),
         .load(1'b1),
         .clk(clk),
