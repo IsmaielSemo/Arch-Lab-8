@@ -119,18 +119,10 @@ module RISCV_pipeline (
         WriteData,
         data_in1,
         data_in2); 
-//Branch && !MuxControl, MemRead&& !MuxControl, MemtoReg&& !MuxControl, c&& !MuxControl, MemWrite&& !MuxControl, ALUSrc&& !MuxControl, RegWrite&& !module ALUControlUnit
-    assign Branch = (!MuxControl)?1:0;
-     assign MemRead = (!MuxControl)?1:0;
-      assign MemtoReg = (!MuxControl)?1:0;
-       assign ALUOp = (!MuxControl)?1:0;
-       assign MemWrite = (!MuxControl)?1:0;
-       assign ALUSrc = (!MuxControl)?1:0;
-       assign RegWrite = (!MuxControl)?1:0;
-   
+
     // Pipeline Register ID/EX
     NbitRegister #(200) ID_EX (
-        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch , MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite}),
+        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch & !MuxControl, MemRead & !MuxControl, MemtoReg& !MuxControl, ALUOp& !MuxControl, MemWrite& !MuxControl, ALUSrc& !MuxControl, RegWrite& !MuxControl}),
         .rst(reset),
         .load(1'b1),
         .clk(clk),
