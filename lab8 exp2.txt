@@ -122,7 +122,7 @@ module RISCV_pipeline (
 
     // Pipeline Register ID/EX
     NbitRegister #(200) ID_EX (
-        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch && !MuxControl, MemRead&& !MuxControl, MemtoReg&& !MuxControl, ALUOp&& !MuxControl, MemWrite&& !MuxControl, ALUSrc&& !MuxControl, RegWrite&& !MuxControl}),
+        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch & !MuxControl, MemRead& !MuxControl, MemtoReg& !MuxControl, ALUOp& !MuxControl, MemWrite& !MuxControl, ALUSrc& !MuxControl, RegWrite& !MuxControl}),
         .rst(reset),
         .load(1'b1),
         .clk(clk),
