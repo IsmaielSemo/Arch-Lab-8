@@ -122,20 +122,14 @@ module RISCV_pipeline (
 
     // Pipeline Register ID/EX
     NbitRegister #(200) ID_EX (
-        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch & !MuxControl, MemRead& !MuxControl, MemtoReg& !MuxControl, ALUOp& !MuxControl, MemWrite& !MuxControl, ALUSrc& !MuxControl, RegWrite& !MuxControl}),
+        .D({IF_ID_PC, data_in1, data_in2, imm_out, IF_ID_Inst[30], IF_ID_Inst[14:12], IF_ID_Inst[19:15], IF_ID_Inst[24:20], IF_ID_Inst[11:7], Branch & !MuxControl, MemRead& !MuxControl, MemtoReg& !MuxControl, ALUOp & {2{!MuxControl}}, MemWrite& !MuxControl, ALUSrc& !MuxControl, RegWrite& !MuxControl}),
         .rst(reset),
         .load(1'b1),
         .clk(clk),
         .Q({ID_EX_PC, ID_EX_RegR1, ID_EX_RegR2, ID_EX_Imm, ID_EX_Func, ID_EX_Rs1, ID_EX_Rs2, ID_EX_Rd, ID_EX_Ctrl})
     );
 
-    // ALU Control
-//    ALUControlUnit ALUcontrol (
-//        ID_EX_Ctrl[4:3],
-//        ID_EX_Func[2:0],
-//        ID_EX_Func[3],
-//        ALU_sel
-//    );
+ 
 ALUControlUnit ALUcontrol (
         ID_EX_Ctrl[4:3],
         ID_EX_Func[2:0],
